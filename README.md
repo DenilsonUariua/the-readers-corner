@@ -8,13 +8,13 @@ To run this project locally from a clean clone:
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Start the development server
-npm run dev
+yarn run dev
 
 # Run unit tests
-npm test
+yarn test
 ```
 
 The application will be available at `https://the-readers-corner.vercel.app/`.
