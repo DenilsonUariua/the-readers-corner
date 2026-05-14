@@ -4,7 +4,7 @@ import FeedPage from './pages/feed'
 
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'bookmarks' | 'feed'>('feed')
+  const [currentPage] = useState<'bookmarks' | 'feed'>('feed')
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--bg)]">
