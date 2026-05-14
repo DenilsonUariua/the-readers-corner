@@ -1,10 +1,16 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { Button, GridList, GridListItem, Heading, Text, TagGroup, Tag, TagList, Label } from 'react-aria-components';
+import { Button, GridList, Text, TagGroup, Tag, TagList, Label } from 'react-aria-components';
 import { fetchFeed, type Article } from '../lib/mockApi';
 import { TOPICS } from '../lib/seed';
-import { useBookmarks } from '../lib/useBookmarks';
+import { useBookmarks } from '../context/BookmarkContext';
+import { ArticleCard } from '../components/articleCard';
 
-export default function FeedPage() {
+interface FeedPageProps {
+  searchQuery?: string;
+  onOpenArticle: (articleId: string) => void;
+}
+
+export default function FeedPage({ searchQuery = '', onOpenArticle }: FeedPageProps) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -20,7 +26,7 @@ export default function FeedPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0, q: searchQuery });
       setArticles(response.data);
       setNextPage(response.meta.nextPage);
     } catch (err) {
@@ -29,7 +35,7 @@ export default function FeedPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedTopicsArray]);
+  }, [selectedTopicsArray, searchQuery]);
 
   useEffect(() => {
     loadInitialFeed();
@@ -40,7 +46,7 @@ export default function FeedPage() {
 
     try {
       setIsFetchingMore(true);
-      const response = await fetchFeed({ topics: selectedTopicsArray, page: nextPage });
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: nextPage, q: searchQuery });
       setArticles(prev => [...prev, ...response.data]);
       setNextPage(response.meta.nextPage);
     } catch (err) {
@@ -48,7 +54,7 @@ export default function FeedPage() {
     } finally {
       setIsFetchingMore(false);
     }
-  }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray]);
+  }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray, searchQuery]);
 
   useEffect(() => {
     const target = observerTarget.current;
@@ -76,7 +82,8 @@ export default function FeedPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1200px] py-10 md:px-8 md:py-16">
+    <main className="mx-auto w-full max-w-[1200px] px-6 py-10 md:px-8 md:py-16">
+
       <div className="mb-10">
         <TagGroup 
           selectionMode="multiple" 
@@ -138,76 +145,13 @@ export default function FeedPage() {
             className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
           >
             {(article) => (
-              <GridListItem 
+              <ArticleCard 
                 key={article.id} 
-                textValue={article.title}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg)] transition-all hover:border-[var(--accent-border)] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-              >
-                <div className="relative aspect-video w-full overflow-hidden bg-[var(--social-bg)]">
-                  {article.imageUrl ? (
-                    <img 
-                      src={article.imageUrl} 
-                      alt="" 
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[var(--text)]/20">
-                      <span className="text-5xl">📖</span>
-                    </div>
-                  )}
-                  {article.premium && (
-                    <div className="absolute top-4 right-4 rounded-full bg-amber-400 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-950 shadow-sm">
-                      Premium
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex flex-1 flex-col p-6 md:p-8">
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {article.topics.map(topic => (
-                      <span 
-                        key={topic.id} 
-                        className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]"
-                      >
-                        {topic.name}
-                      </span>
-                    ))}
-                  </div>
-
-                  <Heading level={2} className="mb-3 line-clamp-2 text-2xl font-bold leading-tight text-[var(--text-h)] group-hover:text-[var(--accent)]">
-                    {article.title}
-                  </Heading>
-
-                  <Text slot="description" className="mb-8 line-clamp-3 flex-1 text-base leading-relaxed text-[var(--text)]">
-                    {article.lead}
-                  </Text>
-
-                  <div className="mt-auto flex items-center justify-between border-t border-[var(--border)] pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-bg)] text-sm font-bold text-[var(--accent)]">
-                        {article.author.charAt(0)}
-                      </div>
-                      <div className="flex flex-col">
-                        <Text className="text-sm font-bold text-[var(--text-h)]">
-                          {article.author}
-                        </Text>
-                        <Text className="text-xs text-[var(--text)]/60">
-                          {new Date(article.publishedAt).toLocaleDateString(undefined, { 
-                            month: 'long', 
-                            day: 'numeric'
-                          })}
-                        </Text>
-                      </div>
-                    </div>
-                    <Button 
-                      onPress={() => toggleBookmark(article)}
-                      className={`rounded-full p-2.5 transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] ${isBookmarked(article.id) ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
-                    >
-                      <span className="text-xl">🔖</span>
-                    </Button>
-                  </div>
-                </div>
-              </GridListItem>
+                article={article} 
+                isBookmarked={isBookmarked(article.id)} 
+                onToggleBookmark={toggleBookmark} 
+                onOpen={onOpenArticle}
+              />
             )}
           </GridList>
 

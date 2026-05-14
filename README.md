@@ -26,7 +26,7 @@ This project is hosted on **Vercel**.
 - **Automated Workflow**: Any merge or changes into/on the `main` branch triggers an automatic deployment to the production environment.
 - **Preview Deployments**: Pull requests and commits to other branches generate unique preview URLs for testing before merging to production.
 
-## �🛠 Tech Stack
+## � Tech Stack
 
 - **React 19**: Core UI library.
 - **Vite 8**: Next-generation frontend tooling.
@@ -41,6 +41,7 @@ This project is hosted on **Vercel**.
 ### What's done?
 - **Responsive Header**: Includes a search bar and navigation between Feed and Bookmarks.
 - **Article Feed**:
+  - **Live Search**: Integrated search bar in the header that filters articles by title with debouncing for performance.
   - Infinite scroll pagination using `IntersectionObserver`.
   - Topic-based filtering with multi-select support.
   - Robust loading, error (with in-situ retry), and empty states.
@@ -56,7 +57,6 @@ This project is hosted on **Vercel**.
 - **Full Routing (e.g., React Router)**: I opted for a simple state-based conditional rendering in `App.tsx` to keep the project lightweight and focused on the core requirements. For a larger app, I would implement URL-based routing.
 - **Article Detail Pages**: The mock API supports fetching individual articles, but I focused on the "Feed" and "Bookmark" views as per the core request.
 - **Full UI Testing**: While business logic in `lib` is covered by unit tests, I've skipped full component/integration testing (e.g. testing the Header navigation or Infinite Scroll interactions) due to time constraints.
-- **Search Logic in Feed**: The search bar in the header is visually implemented but doesn't currently filter the feed data (though the `fetchFeed` API supports it).
 
 ### What would come next?
 - **URL as State**: Syncing topic filters and search queries with URL search parameters to allow for deep linking.
