@@ -1,22 +1,21 @@
 import { useState } from 'react'
 import { Header } from './components/header'
 import FeedPage from './pages/feed'
-
+import BookmarkPage from './pages/bookmark'
 
 function App() {
-  const [currentPage] = useState<'bookmarks' | 'feed'>('feed')
+  const [currentPage, setCurrentPage] = useState<'feed' | 'bookmarks'>('feed')
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--bg)]">
-      <Header />
-      {currentPage === 'bookmarks' ? (
-        <>
-          <section id="center">
-            {/* Existing landing page content */}
-          </section>
-        </>
-      ) : (
+      <Header 
+        activePage={currentPage} 
+        onPageChange={(page) => setCurrentPage(page)} 
+      />
+      {currentPage === 'feed' ? (
         <FeedPage />
+      ) : (
+        <BookmarkPage />
       )}
     </div>
   )

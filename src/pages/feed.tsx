@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Button, GridList, GridListItem, Heading, Text, TagGroup, Tag, TagList, Label } from 'react-aria-components';
 import { fetchFeed, type Article } from '../lib/mockApi';
 import { TOPICS } from '../lib/seed';
+import { useBookmarks } from '../lib/useBookmarks';
 
 export default function FeedPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -11,30 +12,29 @@ export default function FeedPage() {
   const [selectedTopicIds, setSelectedTopicIds] = useState<Set<string>>(new Set());
   const [nextPage, setNextPage] = useState<number | null>(null);
 
+  const { toggleBookmark, isBookmarked } = useBookmarks();
   const observerTarget = useRef<HTMLDivElement>(null);
   const selectedTopicsArray = useMemo(() => Array.from(selectedTopicIds), [selectedTopicIds]);
 
-  // Initial load or topic change
-  useEffect(() => {
-    async function loadInitialFeed() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
-        setArticles(response.data);
-        setNextPage(response.meta.nextPage);
-      } catch (err) {
-        setError('Failed to load feed. Please try again later.');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+  const loadInitialFeed = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
+      setArticles(response.data);
+      setNextPage(response.meta.nextPage);
+    } catch (err) {
+      setError('Failed to load feed. Please try again later.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
-
-    loadInitialFeed();
   }, [selectedTopicsArray]);
 
-  // Load more function
+  useEffect(() => {
+    loadInitialFeed();
+  }, [loadInitialFeed]);
+
   const loadMore = useCallback(async () => {
     if (nextPage === null || isFetchingMore || isLoading) return;
 
@@ -45,13 +45,11 @@ export default function FeedPage() {
       setNextPage(response.meta.nextPage);
     } catch (err) {
       console.error('Failed to load more articles:', err);
-      // We don't set the main error state here to avoid hiding existing articles
     } finally {
       setIsFetchingMore(false);
     }
   }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray]);
 
-  // Intersection Observer setup
   useEffect(() => {
     const target = observerTarget.current;
     if (!target || nextPage === null) return;
@@ -78,18 +76,7 @@ export default function FeedPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1200px] px-6 py-10 md:px-8 md:py-16">
-      <header className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <Heading level={1} className="text-4xl font-bold tracking-tight text-[var(--text-h)] md:text-5xl">
-            Latest Stories
-          </Heading>
-          <Text className="mt-4 block text-lg leading-relaxed text-[var(--text)]">
-            Curated reading for the curious mind. Explore the latest insights across politics, technology, and culture.
-          </Text>
-        </div>
-      </header>
-
+    <main className="mx-auto w-full max-w-[1200px] py-10 md:px-8 md:py-16">
       <div className="mb-10">
         <TagGroup 
           selectionMode="multiple" 
@@ -97,7 +84,7 @@ export default function FeedPage() {
           onSelectionChange={(keys) => setSelectedTopicIds(keys as Set<string>)}
           className="flex flex-col gap-3"
         >
-          <Label className="text-sm font-semibold uppercase tracking-wider text-[var(--text)]/60">
+          <Label className="text-sm self-start font-semibold uppercase tracking-wider text-[var(--text)]/60">
             Filter by Topic
           </Label>
           <TagList 
@@ -126,7 +113,7 @@ export default function FeedPage() {
         <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl border border-red-100 bg-red-50 p-8 text-center">
           <Text className="text-lg font-medium text-red-600">{error}</Text>
           <Button 
-            onPress={() => window.location.reload()}
+            onPress={loadInitialFeed}
             className="rounded-xl bg-red-600 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Retry
@@ -212,7 +199,10 @@ export default function FeedPage() {
                         </Text>
                       </div>
                     </div>
-                    <Button className="rounded-full p-2.5 text-[var(--text)] transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)]">
+                    <Button 
+                      onPress={() => toggleBookmark(article)}
+                      className={`rounded-full p-2.5 transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] ${isBookmarked(article.id) ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
+                    >
                       <span className="text-xl">🔖</span>
                     </Button>
                   </div>
@@ -221,7 +211,6 @@ export default function FeedPage() {
             )}
           </GridList>
 
-          {/* Observer target and Loading state for pagination */}
           <div ref={observerTarget} className="mt-12 flex justify-center py-8">
             {isFetchingMore ? (
               <div className="flex flex-col items-center gap-3">
