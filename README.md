@@ -1,6 +1,8 @@
 # The Reader's Corner
 
 A modern, accessible web application for discovering and saving articles. Built with a focus on UX, accessibility, and clean component architecture.
+## Lighthouse scores (incognito mode due to extensions)
+<img width="929" height="671" alt="image" src="https://github.com/user-attachments/assets/8babcb0c-13d1-4515-839b-749343a2cbd9" />
 
 ## 🚀 Getting Started
 
@@ -44,7 +46,7 @@ This project is hosted on **Vercel**.
   - **Live Search**: Integrated search bar in the header that filters articles by title with debouncing for performance.
   - Infinite scroll pagination using `IntersectionObserver`.
   - Topic-based filtering with multi-select support.
-  - Robust loading, error (with in-situ retry), and empty states.
+  - Robust loading, error component refresh, and empty states.
 - **Bookmark System**: Users can save articles which persist across sessions using `localStorage`.
 - **Accessible UI**: Leveraged React Aria for components like `TagGroup`, `GridList`, and `SearchField` to ensure full keyboard navigation and screen-reader compatibility.
 - **Modern Styling**: A clean, editorial-style layout using Tailwind CSS that works seamlessly on mobile and desktop.
@@ -55,7 +57,6 @@ This project is hosted on **Vercel**.
 
 ### What's skipped — and why?
 - **Full Routing (e.g., React Router)**: I opted for a simple state-based conditional rendering in `App.tsx` to keep the project lightweight and focused on the core requirements. For a larger app, I would implement URL-based routing.
-- **Article Detail Pages**: The mock API supports fetching individual articles, but I focused on the "Feed" and "Bookmark" views as per the core request.
 - **Full UI Testing**: While business logic in `lib` is covered by unit tests, I've skipped full component/integration testing (e.g. testing the Header navigation or Infinite Scroll interactions) due to time constraints.
 
 ### What would come next?
@@ -63,6 +64,7 @@ This project is hosted on **Vercel**.
 - **Component & Integration Tests**: Adding tests for complex UI interactions like the `IntersectionObserver` and navigation.
 - **Article Reading View**: Implementing a dedicated page for reading full articles.
 - **Animation**: Adding micro-interactions using Framer Motion for smoother transitions between states.
+- **Offline Mode**: Implementing the ability for users to read articles without an internet connection
 
 ## ⚖️ Trade-offs & Decisions
 
