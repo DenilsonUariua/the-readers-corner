@@ -1,10 +1,15 @@
 import { Button, SearchField, Input, Label, Group } from 'react-aria-components';
 
-export function Header() {
+interface HeaderProps {
+  activePage: 'feed' | 'bookmarks';
+  onPageChange: (page: 'feed' | 'bookmarks') => void;
+}
+
+export function Header({ activePage, onPageChange }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--bg)] px-8 py-4">
       <div className="mx-auto flex flex-row max-w-[1200px] items-center justify-between gap-8 max-md:flex-col max-md:gap-4">
-        <div className="shrink-0">
+        <div className="shrink-0 cursor-pointer" onClick={() => onPageChange('feed')}>
           <h5 className="m-0 text-sm font-medium text-[var(--text-h)]">The Reader's Corner</h5>
         </div>
         
@@ -26,10 +31,16 @@ export function Header() {
           </SearchField>
 
           <nav className="flex gap-3">
-            <Button className="rounded-lg border border-transparent px-4 py-2 text-base font-medium text-[var(--text)] transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] pressed:bg-[var(--accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]">
+            <Button 
+              onPress={() => onPageChange('feed')}
+              className={`rounded-lg border border-transparent px-4 py-2 text-base font-medium transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${activePage === 'feed' ? 'bg-[var(--accent-bg)] text-[var(--accent)]' : 'text-[var(--text)]'}`}
+            >
               Feed
             </Button>
-            <Button className="rounded-lg border border-transparent px-4 py-2 text-base font-medium text-[var(--text)] transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] pressed:bg-[var(--accent-border)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]">
+            <Button 
+              onPress={() => onPageChange('bookmarks')}
+              className={`rounded-lg border border-transparent px-4 py-2 text-base font-medium transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${activePage === 'bookmarks' ? 'bg-[var(--accent-bg)] text-[var(--accent)]' : 'text-[var(--text)]'}`}
+            >
               Bookmarks
             </Button>
           </nav>

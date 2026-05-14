@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Button, GridList, GridListItem, Heading, Text, TagGroup, Tag, TagList, Label } from 'react-aria-components';
 import { fetchFeed, type Article } from '../lib/mockApi';
 import { TOPICS } from '../lib/seed';
+import { useBookmarks } from '../lib/useBookmarks';
 
 export default function FeedPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -11,6 +12,7 @@ export default function FeedPage() {
   const [selectedTopicIds, setSelectedTopicIds] = useState<Set<string>>(new Set());
   const [nextPage, setNextPage] = useState<number | null>(null);
 
+  const { toggleBookmark, isBookmarked } = useBookmarks();
   const observerTarget = useRef<HTMLDivElement>(null);
   const selectedTopicsArray = useMemo(() => Array.from(selectedTopicIds), [selectedTopicIds]);
 
@@ -45,7 +47,6 @@ export default function FeedPage() {
       setNextPage(response.meta.nextPage);
     } catch (err) {
       console.error('Failed to load more articles:', err);
-      // We don't set the main error state here to avoid hiding existing articles
     } finally {
       setIsFetchingMore(false);
     }
@@ -212,8 +213,11 @@ export default function FeedPage() {
                         </Text>
                       </div>
                     </div>
-                    <Button className="rounded-full p-2.5 text-[var(--text)] transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)]">
-                      <span className="text-xl">🔖</span>
+                    <Button 
+                      onPress={() => toggleBookmark(article)}
+                      className={`rounded-full p-2.5 transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] ${isBookmarked(article.id) ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
+                    >
+                      <span className="text-xl">{isBookmarked(article.id) ? '🔖' : '🔖'}</span>
                     </Button>
                   </div>
                 </div>
@@ -221,7 +225,6 @@ export default function FeedPage() {
             )}
           </GridList>
 
-          {/* Observer target and Loading state for pagination */}
           <div ref={observerTarget} className="mt-12 flex justify-center py-8">
             {isFetchingMore ? (
               <div className="flex flex-col items-center gap-3">
