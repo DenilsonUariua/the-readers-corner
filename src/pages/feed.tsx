@@ -16,27 +16,25 @@ export default function FeedPage() {
   const observerTarget = useRef<HTMLDivElement>(null);
   const selectedTopicsArray = useMemo(() => Array.from(selectedTopicIds), [selectedTopicIds]);
 
-  // Initial load or topic change
-  useEffect(() => {
-    async function loadInitialFeed() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
-        setArticles(response.data);
-        setNextPage(response.meta.nextPage);
-      } catch (err) {
-        setError('Failed to load feed. Please try again later.');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+  const loadInitialFeed = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
+      setArticles(response.data);
+      setNextPage(response.meta.nextPage);
+    } catch (err) {
+      setError('Failed to load feed. Please try again later.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
-
-    loadInitialFeed();
   }, [selectedTopicsArray]);
 
-  // Load more function
+  useEffect(() => {
+    loadInitialFeed();
+  }, [loadInitialFeed]);
+
   const loadMore = useCallback(async () => {
     if (nextPage === null || isFetchingMore || isLoading) return;
 
@@ -52,7 +50,6 @@ export default function FeedPage() {
     }
   }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray]);
 
-  // Intersection Observer setup
   useEffect(() => {
     const target = observerTarget.current;
     if (!target || nextPage === null) return;
@@ -98,7 +95,7 @@ export default function FeedPage() {
           onSelectionChange={(keys) => setSelectedTopicIds(keys as Set<string>)}
           className="flex flex-col gap-3"
         >
-          <Label className="text-sm font-semibold uppercase tracking-wider text-[var(--text)]/60">
+          <Label className="text-sm self-start font-semibold uppercase tracking-wider text-[var(--text)]/60">
             Filter by Topic
           </Label>
           <TagList 
@@ -127,7 +124,7 @@ export default function FeedPage() {
         <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl border border-red-100 bg-red-50 p-8 text-center">
           <Text className="text-lg font-medium text-red-600">{error}</Text>
           <Button 
-            onPress={() => window.location.reload()}
+            onPress={loadInitialFeed}
             className="rounded-xl bg-red-600 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
             Retry
@@ -217,7 +214,7 @@ export default function FeedPage() {
                       onPress={() => toggleBookmark(article)}
                       className={`rounded-full p-2.5 transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] ${isBookmarked(article.id) ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
                     >
-                      <span className="text-xl">{isBookmarked(article.id) ? '🔖' : '🔖'}</span>
+                      <span className="text-xl">🔖</span>
                     </Button>
                   </div>
                 </div>
