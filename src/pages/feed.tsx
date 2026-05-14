@@ -4,7 +4,11 @@ import { fetchFeed, type Article } from '../lib/mockApi';
 import { TOPICS } from '../lib/seed';
 import { useBookmarks } from '../lib/useBookmarks';
 
-export default function FeedPage() {
+interface FeedPageProps {
+  searchQuery?: string;
+}
+
+export default function FeedPage({ searchQuery = '' }: FeedPageProps) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -20,7 +24,7 @@ export default function FeedPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0 });
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: 0, q: searchQuery });
       setArticles(response.data);
       setNextPage(response.meta.nextPage);
     } catch (err) {
@@ -29,7 +33,7 @@ export default function FeedPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedTopicsArray]);
+  }, [selectedTopicsArray, searchQuery]);
 
   useEffect(() => {
     loadInitialFeed();
@@ -40,7 +44,7 @@ export default function FeedPage() {
 
     try {
       setIsFetchingMore(true);
-      const response = await fetchFeed({ topics: selectedTopicsArray, page: nextPage });
+      const response = await fetchFeed({ topics: selectedTopicsArray, page: nextPage, q: searchQuery });
       setArticles(prev => [...prev, ...response.data]);
       setNextPage(response.meta.nextPage);
     } catch (err) {
@@ -48,7 +52,7 @@ export default function FeedPage() {
     } finally {
       setIsFetchingMore(false);
     }
-  }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray]);
+  }, [nextPage, isFetchingMore, isLoading, selectedTopicsArray, searchQuery]);
 
   useEffect(() => {
     const target = observerTarget.current;
@@ -76,7 +80,20 @@ export default function FeedPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1200px] py-10 md:px-8 md:py-16">
+    <main className="mx-auto w-full max-w-[1200px] px-6 py-10 md:px-8 md:py-16">
+      <header className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <Heading level={1} className="text-4xl font-bold tracking-tight text-[var(--text-h)] md:text-5xl">
+            {searchQuery ? `Results for "${searchQuery}"` : 'Latest Stories'}
+          </Heading>
+          <Text className="mt-4 block text-lg leading-relaxed text-[var(--text)]">
+            {searchQuery 
+              ? `Found ${articles.length} articles matching your search.` 
+              : 'Curated reading for the curious mind. Explore the latest insights across politics, technology, and culture.'}
+          </Text>
+        </div>
+      </header>
+
       <div className="mb-10">
         <TagGroup 
           selectionMode="multiple" 

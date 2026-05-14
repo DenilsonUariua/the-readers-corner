@@ -3,9 +3,11 @@ import { Button, SearchField, Input, Label, Group } from 'react-aria-components'
 interface HeaderProps {
   activePage: 'feed' | 'bookmarks';
   onPageChange: (page: 'feed' | 'bookmarks') => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
-export function Header({ activePage, onPageChange }: HeaderProps) {
+export function Header({ activePage, onPageChange, searchQuery, onSearchChange }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--bg)] px-8 py-4">
       <div className="mx-auto flex flex-row max-w-[1200px] items-center justify-between gap-8 max-md:flex-col max-md:gap-4">
@@ -14,7 +16,11 @@ export function Header({ activePage, onPageChange }: HeaderProps) {
         </div>
         
         <div className="flex flex-1 items-center justify-end gap-6 max-md:w-full max-md:flex-col max-md:gap-4">
-          <SearchField className="flex w-full max-w-[400px] flex-col gap-1 max-md:max-w-none">
+          <SearchField 
+            className="flex w-full max-w-[400px] flex-col gap-1 max-md:max-w-none"
+            value={searchQuery}
+            onChange={onSearchChange}
+          >
             <Label className="hidden">Search</Label>
             <Group className="flex items-center rounded-lg border border-[var(--border)] bg-[var(--social-bg)] px-3 py-1 transition-all focus-within:border-[var(--accent)] focus-within:ring-1 focus-within:ring-[var(--accent)]">
               <Input 
