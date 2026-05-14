@@ -19,7 +19,14 @@ yarn test
 
 The application will be available at `https://the-readers-corner.vercel.app/`.
 
-## 🛠 Tech Stack
+## � Deployment & CI/CD
+
+This project is hosted on **Vercel**. 
+
+- **Automated Workflow**: Any merge or changes into/on the `main` branch triggers an automatic deployment to the production environment.
+- **Preview Deployments**: Pull requests and commits to other branches generate unique preview URLs for testing before merging to production.
+
+## �🛠 Tech Stack
 
 - **React 19**: Core UI library.
 - **Vite 8**: Next-generation frontend tooling.
