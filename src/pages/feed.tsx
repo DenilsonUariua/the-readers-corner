@@ -7,9 +7,10 @@ import { ArticleCard } from '../components/articleCard';
 
 interface FeedPageProps {
   searchQuery?: string;
+  onOpenArticle: (articleId: string) => void;
 }
 
-export default function FeedPage({ searchQuery = '' }: FeedPageProps) {
+export default function FeedPage({ searchQuery = '', onOpenArticle }: FeedPageProps) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -82,18 +83,6 @@ export default function FeedPage({ searchQuery = '' }: FeedPageProps) {
 
   return (
     <main className="mx-auto w-full max-w-[1200px] px-6 py-10 md:px-8 md:py-16">
-      <header className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <Heading level={1} className="text-4xl font-bold tracking-tight text-[var(--text-h)] md:text-5xl">
-            {searchQuery ? `Results for "${searchQuery}"` : 'Latest Stories'}
-          </Heading>
-          <Text className="mt-4 block text-lg leading-relaxed text-[var(--text)]">
-            {searchQuery 
-              ? `Found ${articles.length} articles matching your search.` 
-              : 'Curated reading for the curious mind. Explore the latest insights across politics, technology, and culture.'}
-          </Text>
-        </div>
-      </header>
 
       <div className="mb-10">
         <TagGroup 
@@ -161,6 +150,7 @@ export default function FeedPage({ searchQuery = '' }: FeedPageProps) {
                 article={article} 
                 isBookmarked={isBookmarked(article.id)} 
                 onToggleBookmark={toggleBookmark} 
+                onOpen={onOpenArticle}
               />
             )}
           </GridList>

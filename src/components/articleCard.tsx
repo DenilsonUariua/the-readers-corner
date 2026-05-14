@@ -5,15 +5,19 @@ interface ArticleCardProps {
   article: Article;
   isBookmarked: boolean;
   onToggleBookmark: (article: Article) => void;
+  onOpen: (articleId: string) => void;
 }
 
-export function ArticleCard({ article, isBookmarked, onToggleBookmark }: ArticleCardProps) {
+export function ArticleCard({ article, isBookmarked, onToggleBookmark, onOpen }: ArticleCardProps) {
   return (
     <GridListItem 
       textValue={article.title}
       className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg)] transition-all hover:border-[var(--accent-border)] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
     >
-      <div className="relative aspect-video w-full overflow-hidden bg-[var(--social-bg)]">
+      <div 
+        className="relative aspect-video w-full cursor-pointer overflow-hidden bg-[var(--social-bg)]"
+        onClick={() => onOpen(article.id)}
+      >
         {article.imageUrl ? (
           <img 
             src={article.imageUrl} 
@@ -44,11 +48,19 @@ export function ArticleCard({ article, isBookmarked, onToggleBookmark }: Article
           ))}
         </div>
 
-        <Heading level={2} className="mb-3 line-clamp-2 text-2xl font-bold leading-tight text-[var(--text-h)] group-hover:text-[var(--accent)]">
+        <Heading 
+          level={2} 
+          className="mb-3 cursor-pointer line-clamp-2 text-2xl font-bold leading-tight text-[var(--text-h)] group-hover:text-[var(--accent)]"
+          onClick={() => onOpen(article.id)}
+        >
           {article.title}
         </Heading>
 
-        <Text slot="description" className="mb-8 line-clamp-3 flex-1 text-base leading-relaxed text-[var(--text)]">
+        <Text 
+          slot="description" 
+          className="mb-8 cursor-pointer line-clamp-3 flex-1 text-base leading-relaxed text-[var(--text)]"
+          onClick={() => onOpen(article.id)}
+        >
           {article.lead}
         </Text>
 

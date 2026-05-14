@@ -2,7 +2,11 @@ import { GridList, Heading, Text } from 'react-aria-components';
 import { useBookmarks } from '../lib/useBookmarks';
 import { ArticleCard } from '../components/articleCard';
 
-export default function BookmarkPage() {
+interface BookmarkPageProps {
+  onOpenArticle: (id: string) => void;
+}
+
+export default function BookmarkPage({ onOpenArticle }: BookmarkPageProps) {
   const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
 
   return (
@@ -33,6 +37,7 @@ export default function BookmarkPage() {
               article={article} 
               isBookmarked={isBookmarked(article.id)} 
               onToggleBookmark={toggleBookmark} 
+              onOpen={onOpenArticle}
             />
           )}
         </GridList>

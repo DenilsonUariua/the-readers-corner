@@ -12,8 +12,10 @@ export function Header({ activePage, onPageChange, searchQuery, onSearchChange }
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--bg)] px-8 py-4">
       <div className="mx-auto flex flex-row max-w-[1200px] items-center justify-between gap-8 max-md:flex-col max-md:gap-4">
         <div className="shrink-0 cursor-pointer" onClick={() => onPageChange('feed')}>
-          <h5 className="m-0 text-sm font-medium text-[var(--text-h)] flex flex-row">The Reader's 
-            <h5 className='text-xs font-extralight self-center ml-1'>Corner</h5></h5>
+          <div className="flex flex-row items-baseline gap-1 m-0">
+            <span className="text-sm font-medium text-[var(--text-h)]">The Reader's</span>
+            <span className="text-xs font-extralight text-[var(--text-h)]">Corner</span>
+          </div>
         </div>
         
         <div className="flex flex-1 items-center justify-end gap-6 max-md:w-full max-md:flex-col max-md:gap-4">
