@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Button, GridList, Heading, Text, TagGroup, Tag, TagList, Label } from 'react-aria-components';
 import { fetchFeed, type Article } from '../lib/mockApi';
 import { TOPICS } from '../lib/seed';
-import { useBookmarks } from '../lib/useBookmarks';
+import { useBookmarks } from '../context/BookmarkContext';
 import { ArticleCard } from '../components/articleCard';
 
 interface FeedPageProps {

@@ -12,7 +12,7 @@ export function ArticleCard({ article, isBookmarked, onToggleBookmark, onOpen }:
   return (
     <GridListItem 
       textValue={article.title}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg)] transition-all hover:border-[var(--accent-border)] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg)] transition-all hover:border-[var(--accent-border)] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] active:scale-[0.98] active:border-[var(--accent)]"
     >
       <div 
         className="relative aspect-video w-full cursor-pointer overflow-hidden bg-[var(--social-bg)]"
@@ -82,10 +82,20 @@ export function ArticleCard({ article, isBookmarked, onToggleBookmark, onOpen }:
             </div>
           </div>
           <Button 
-            onPress={() => onToggleBookmark(article)}
-            className={`rounded-full p-2.5 transition-colors hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] ${isBookmarked ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
+            onPress={(e) => {
+              // Stop propagation to prevent opening the article when clicking the bookmark button
+              e.continuePropagation();
+              onToggleBookmark(article);
+            }}
+            className={`rounded-full p-2.5 transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent)] 
+              ${isBookmarked 
+                ? 'bg-[var(--accent)] text-white shadow-md' 
+                : 'bg-[var(--accent-bg)]/30 text-[var(--text)] hover:scale-110'}`}
+            aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
           >
-            <span className="text-xl">🔖</span>
+            <span className={`text-xl transition-transform ${isBookmarked ? 'scale-110' : ''}`}>
+              {isBookmarked ? '🔖' : '🔖'}
+            </span>
           </Button>
         </div>
       </div>

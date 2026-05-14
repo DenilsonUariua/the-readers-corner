@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Button, Heading, Text } from 'react-aria-components';
 import { fetchArticle, type Article } from '../lib/mockApi';
-import { useBookmarks } from '../lib/useBookmarks';
+import { useBookmarks } from '../context/BookmarkContext';
 
 interface ArticlePageProps {
   articleId: string;
@@ -142,9 +142,15 @@ export default function ArticlePage({ articleId, onBack }: ArticlePageProps) {
           </div>
           <Button 
             onPress={() => toggleBookmark(article)}
-            className={`rounded-full p-3 transition-colors hover:bg-[var(--accent-bg)] ${isBookmarked(article.id) ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}
+            className={`rounded-full p-3 transition-all hover:bg-[var(--accent-bg)] 
+              ${isBookmarked(article.id) 
+                ? 'bg-[var(--accent)] text-white shadow-md' 
+                : 'bg-[var(--accent-bg)]/30 text-[var(--text)] hover:scale-110'}`}
+            aria-label={isBookmarked(article.id) ? "Remove from bookmarks" : "Add to bookmarks"}
           >
-            <span className="text-2xl">🔖</span>
+            <span className={`text-2xl transition-transform ${isBookmarked(article.id) ? 'scale-110' : ''}`}>
+              {isBookmarked(article.id) ? '🔖' : '🔖'}
+            </span>
           </Button>
         </div>
       </header>

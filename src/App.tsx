@@ -3,6 +3,7 @@ import { Header } from './components/header'
 import FeedPage from './pages/feed'
 import BookmarkPage from './pages/bookmark'
 import ArticlePage from './pages/article'
+import { BookmarkProvider } from './context/BookmarkContext'
 
 type Page = 'feed' | 'bookmarks' | 'article';
 
@@ -33,37 +34,39 @@ function App() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--bg)]">
-      <Header 
-        activePage={currentPage === 'article' ? 'feed' : currentPage} 
-        onPageChange={(page) => {
-          setCurrentPage(page)
-          setSelectedArticleId(null)
-        }} 
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-      
-      {currentPage === 'feed' && (
-        <FeedPage 
-          searchQuery={debouncedSearchQuery} 
-          onOpenArticle={handleOpenArticle} 
+    <BookmarkProvider>
+      <div className="flex min-h-screen flex-col bg-[var(--bg)]">
+        <Header 
+          activePage={currentPage === 'article' ? 'feed' : currentPage} 
+          onPageChange={(page) => {
+            setCurrentPage(page)
+            setSelectedArticleId(null)
+          }} 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
-      )}
-      
-      {currentPage === 'bookmarks' && (
-        <BookmarkPage 
-          onOpenArticle={handleOpenArticle} 
-        />
-      )}
-      
-      {currentPage === 'article' && selectedArticleId && (
-        <ArticlePage 
-          articleId={selectedArticleId} 
-          onBack={handleBackToFeed} 
-        />
-      )}
-    </div>
+        
+        {currentPage === 'feed' && (
+          <FeedPage 
+            searchQuery={debouncedSearchQuery} 
+            onOpenArticle={handleOpenArticle} 
+          />
+        )}
+        
+        {currentPage === 'bookmarks' && (
+          <BookmarkPage 
+            onOpenArticle={handleOpenArticle} 
+          />
+        )}
+        
+        {currentPage === 'article' && selectedArticleId && (
+          <ArticlePage 
+            articleId={selectedArticleId} 
+            onBack={handleBackToFeed} 
+          />
+        )}
+      </div>
+    </BookmarkProvider>
   )
 }
 

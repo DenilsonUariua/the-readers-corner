@@ -1,5 +1,5 @@
 import { GridList, Heading, Text } from 'react-aria-components';
-import { useBookmarks } from '../lib/useBookmarks';
+import { useBookmarks } from '../context/BookmarkContext';
 import { ArticleCard } from '../components/articleCard';
 
 interface BookmarkPageProps {

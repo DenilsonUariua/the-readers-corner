@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useBookmarks } from './useBookmarks';
+import { useBookmarks, BookmarkProvider } from '../context/BookmarkContext';
 import type { Article } from './mockApi';
+import React from 'react';
 
 const mockArticle: Article = {
   id: '1',
@@ -24,19 +25,23 @@ describe('useBookmarks', () => {
     localStorage.clear();
   });
 
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <BookmarkProvider>{children}</BookmarkProvider>
+  );
+
   it('starts with an empty array of bookmarks', () => {
-    const { result } = renderHook(() => useBookmarks());
+    const { result } = renderHook(() => useBookmarks(), { wrapper });
     expect(result.current.bookmarks).toEqual([]);
   });
 
   it('loads initial bookmarks from localStorage', () => {
     localStorage.setItem('bookmarks', JSON.stringify([mockArticle]));
-    const { result } = renderHook(() => useBookmarks());
+    const { result } = renderHook(() => useBookmarks(), { wrapper });
     expect(result.current.bookmarks).toEqual([mockArticle]);
   });
 
   it('toggles a bookmark on', () => {
-    const { result } = renderHook(() => useBookmarks());
+    const { result } = renderHook(() => useBookmarks(), { wrapper });
     
     act(() => {
       result.current.toggleBookmark(mockArticle);
@@ -49,7 +54,7 @@ describe('useBookmarks', () => {
 
   it('toggles a bookmark off', () => {
     localStorage.setItem('bookmarks', JSON.stringify([mockArticle]));
-    const { result } = renderHook(() => useBookmarks());
+    const { result } = renderHook(() => useBookmarks(), { wrapper });
 
     act(() => {
       result.current.toggleBookmark(mockArticle);
